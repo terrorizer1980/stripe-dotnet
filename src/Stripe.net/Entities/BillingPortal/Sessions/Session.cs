@@ -19,6 +19,37 @@ namespace Stripe.BillingPortal
         [JsonProperty("object")]
         public string Object { get; set; }
 
+        #region Expandable Configuration
+
+        /// <summary>
+        /// (ID of the Configuration)
+        /// The configuration that is used with this session.
+        /// </summary>
+        [JsonIgnore]
+        public string ConfigurationId
+        {
+            get => this.InternalConfiguration?.Id;
+            set => this.InternalConfiguration = SetExpandableFieldId(value, this.InternalConfiguration);
+        }
+
+        /// <summary>
+        /// (Expanded)
+        /// The configuration that is used with this session.
+        ///
+        /// For more information, see the <a href="https://stripe.com/docs/expand">expand documentation</a>.
+        /// </summary>
+        [JsonIgnore]
+        public Configuration Configuration
+        {
+            get => this.InternalConfiguration?.ExpandedObject;
+            set => this.InternalConfiguration = SetExpandableFieldObject(value, this.InternalConfiguration);
+        }
+
+        [JsonProperty("configuration")]
+        [JsonConverter(typeof(ExpandableFieldConverter<Configuration>))]
+        internal ExpandableField<Configuration> InternalConfiguration { get; set; }
+        #endregion
+
         /// <summary>
         /// Time at which the object was created. Measured in seconds since the Unix epoch.
         /// </summary>
@@ -38,6 +69,15 @@ namespace Stripe.BillingPortal
         /// </summary>
         [JsonProperty("livemode")]
         public bool Livemode { get; set; }
+
+        /// <summary>
+        /// The account for which the session was created on behalf of. When specified, only
+        /// subscriptions and invoices with this <c>on_behalf_of</c> will appear in the portal. For
+        /// more information, see the <a
+        /// href="https://stripe.com/docs/connect/charges-transfers#on-behalf-of">docs</a>.
+        /// </summary>
+        [JsonProperty("on_behalf_of")]
+        public string OnBehalfOf { get; set; }
 
         /// <summary>
         /// The URL to which Stripe should send customers when they click on the link to return to
